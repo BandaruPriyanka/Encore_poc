@@ -22,9 +22,12 @@ steps:
     npx playwright install
   displayName: 'Install Playwright'
 - script: |
+    Xvfb :99 -ac &  # Start Xvfb on display :99
+    export DISPLAY=:99  # Set DISPLAY environment variable to use the virtual display
     cd '$(Build.SourcesDirectory)'
-    npm run createdata1
-  displayName: 'create data 1'
+    npm run createdata1 -- --headed  # Run your script in headed mode
+  displayName: 'Create Data 1 in Headed Mode'
+
  
 - script: |
     cd '$(Build.SourcesDirectory)'
