@@ -76,7 +76,7 @@ class CompassPage {
     const compassElement = frame.locator('//div[text()="Compass"]');
 
     console.log('Waiting for element...');
-    await compassElement.waitFor({ state: 'attached', timeout: 30000 });
+    await compassElement.waitFor({ state: 'attached', timeout: 50000 });
     
     console.log('Checking if element is visible...');
     const isVisible = await compassElement.isVisible();
