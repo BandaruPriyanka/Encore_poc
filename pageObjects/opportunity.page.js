@@ -72,17 +72,27 @@ class CompassPage {
     }
 
  async clickOnCompass() {
-    console.log('Waiting for iframe');
-    await global.page.waitForSelector('iframe#AppLandingPage', { state: 'attached', timeout: 60000 });
-    console.log('iframe found');
+    const maxAttempts = 10;
+    const interval = 5000; // 5 seconds
 
-    const frame = await global.page.frameLocator('iframe#AppLandingPage');
+    for (let i = 0; i < maxAttempts; i++) {
+        console.log(`Attempt ${i + 1} to find iframe`);
+        const hasIframe = await global.page.evaluate(() => {
+            const iframe = document.querySelector('iframe#AppLandingPage');
+            return iframe && iframe.contentDocument && iframe.contentDocument.body.innerHTML.includes('Compass');
+        });
 
-    console.log('Waiting for Compass element');
-    await frame.locator('//div[text()="Compass"]').waitFor({ state: 'visible', timeout: 60000 });
-    console.log('Compass element found');
+        if (hasIframe) {
+            console.log('iframe with Compass found');
+            const frame = global.page.frameLocator('iframe#AppLandingPage');
+            await frame.locator('div:has-text("Compass")').click({ timeout: 30000 });
+            return;
+        }
 
-    await frame.locator('//div[text()="Compass"]').click({ timeout: 30000 });
+        await global.page.waitForTimeout(interval);
+    }
+
+    throw new Error('iframe with Compass not found after maximum attempts');
 }
     async clickOnCopilot() {
         await this.copilotButton.click();
