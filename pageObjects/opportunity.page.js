@@ -73,6 +73,8 @@ class CompassPage {
 
     async clickOnCompass() {
         // await global.page.frameLocator("iframe#AppLandingPage").locator("//div[text()='Compass']").click();
+          const log=await global.page.content();
+        console.log("page content is", log);
         await global.page.frameLocator('iframe#AppLandingPage')
                 .locator('//div[text()="Compass"]')
                 .waitFor({ state: 'visible', timeout: 30000 })
