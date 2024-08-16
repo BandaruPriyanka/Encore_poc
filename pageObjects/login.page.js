@@ -26,6 +26,8 @@ class LoginPage extends Page {
     }
 
     async login(email,password) {
+           const log1=await global.page.content();
+        console.log("login Page content", log1)
         await this.inputEmail.fill(email);
         await this.nextButton.click();
         await this.inputPassword.fill(password);
