@@ -1,0 +1,60 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- main
+pool:
+  vmImage: ubuntu-latest
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+  displayName: 'Install Node.js'
+- script: |
+    cd '$(Build.SourcesDirectory)'
+    npm install
+  displayName: 'Install Dependencies'
+- script: |
+    cd '$(Build.SourcesDirectory)'
+    npm install -D @playwright/test
+    npx playwright install
+  displayName: 'Install Playwright'
+- script: |
+    cd '$(Build.SourcesDirectory)'
+    npm run createdata1
+  displayName: 'create data 1'
+ 
+- script: |
+    cd '$(Build.SourcesDirectory)'
+    npm run createdata2
+  displayName: 'create data 2'
+
+# Use a shell script for delay
+- script: |
+    echo "Delaying for 17 minutes..."
+    sleep 1020  # 17 minutes in seconds (17 * 60 = 1020)
+  displayName: 'Delay 17 Minutes'
+ 
+- script: |
+    cd '$(Build.SourcesDirectory)'
+    npm run lighthouse_test
+  displayName: 'Run Tests'
+  continueOnError: true
+ 
+# Always run the report generation step
+- script: |
+    cd '$(Build.SourcesDirectory)'
+    npm run generate_reports
+  displayName: 'Generate Reports'
+  condition: always()
+ 
+# Publish the generated HTML report
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Build.SourcesDirectory)/reports/ui/cucumber.html'
+    artifactName: 'cucumber-report'
+    publishLocation: 'pipeline'
+  displayName: 'Publish Cucumber HTML Report'
+  condition: always()  # Ensure this step always runs

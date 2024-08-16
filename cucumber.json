@@ -1,0 +1,9 @@
+{
+    "default": {
+        "require": [
+            "steps/*.js",
+            "pageObjects/*.js",
+            "utility/*.js"
+        ]
+    }
+}
