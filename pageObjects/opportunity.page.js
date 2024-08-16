@@ -71,24 +71,18 @@ class CompassPage {
         return global.page.locator("//span[text()='Hotel del Coronado']");
     }
 
-  async clickOnCompass() {
-    const frame = global.page.frameLocator('iframe#AppLandingPage');
-    const compassElement = frame.locator('//div[text()="Compass"]');
+ async clickOnCompass() {
+    console.log('Waiting for iframe');
+    await global.page.waitForSelector('iframe#AppLandingPage', { state: 'attached', timeout: 60000 });
+    console.log('iframe found');
 
-    console.log('Waiting for element...');
-    await compassElement.waitFor({ state: 'attached', timeout: 50000 });
-    
-    console.log('Checking if element is visible...');
-    const isVisible = await compassElement.isVisible();
-    console.log('Is visible:', isVisible);
+    const frame = await global.page.frameLocator('iframe#AppLandingPage');
 
-    console.log('Checking if element is enabled...');
-    const isEnabled = await compassElement.isEnabled();
-    console.log('Is enabled:', isEnabled);
+    console.log('Waiting for Compass element');
+    await frame.locator('//div[text()="Compass"]').waitFor({ state: 'visible', timeout: 60000 });
+    console.log('Compass element found');
 
-    console.log('Attempting to click...');
-    await compassElement.click({ timeout: 30000 });
-    console.log('Click attempted');
+    await frame.locator('//div[text()="Compass"]').click({ timeout: 30000 });
 }
     async clickOnCopilot() {
         await this.copilotButton.click();
