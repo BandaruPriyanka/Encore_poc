@@ -71,19 +71,18 @@ class CompassPage {
         return global.page.locator("//span[text()='Hotel del Coronado']");
     }
 
-    async clickOnCompass() {
-        // await global.page.frameLocator("iframe#AppLandingPage").locator("//div[text()='Compass']").click();
-          const log=await global.page.content();
-        console.log("page content is", log);
-        await global.page.frameLocator('iframe#AppLandingPage')
-                .locator('//div[text()="Compass"]')
-                .waitFor({ state: 'visible', timeout: 30000 })
-                .then(() => console.log("Element found and visible"))
-                .catch(err => console.error("Element not found:", err));
-        await global.page.frameLocator("iframe#AppLandingPage").locator("//div[text()='Compass']").click({ timeout: 30000 });
-       
+   async clickOnCompass() {
+       const log=await global.page.content();
+        console.log("page content is", log)
+        try {
+            const frame = global.page.frameLocator('iframe#AppLandingPage');
+            await frame.locator('//div[text()="Compass"]').click({ timeout: 30000 });
+        } catch (error) {
+            console.error('Failed to click Compass:', error);
+            await global.page.screenshot({ path: 'error-screenshot.png' });
+            throw error;
+        }
     }
-
     async clickOnCopilot() {
         await this.copilotButton.click();
     }
