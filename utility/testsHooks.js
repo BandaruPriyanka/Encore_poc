@@ -8,7 +8,7 @@ let isFeaturePassed = true;
 
 
 BeforeAll({ timeout: 120 * 1000 }, async () => {
-  let browser = await page.chromium.launch({ headless: true });
+  let browser = await page.chromium.launch({ headless: false });
   global.browser = browser;
   // global.context = await browser.newContext();
   // global.page = await global.context.newPage();
