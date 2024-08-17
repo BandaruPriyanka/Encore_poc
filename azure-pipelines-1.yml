@@ -23,7 +23,7 @@ steps:
   displayName: 'Install Playwright'
 - script: |
     cd '$(Build.SourcesDirectory)'
-    npm run createdata1
+    npm run createdata1 --headed
   displayName: 'create data 1'
  
 - script: |
