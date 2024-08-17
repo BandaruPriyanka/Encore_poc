@@ -71,29 +71,45 @@ class CompassPage {
         return global.page.locator("//span[text()='Hotel del Coronado']");
     }
 
- async clickOnCompass() {
-    const maxAttempts = 10;
-    const interval = 5000; // 5 seconds
-
-    for (let i = 0; i < maxAttempts; i++) {
-        console.log(`Attempt ${i + 1} to find iframe`);
-        const hasIframe = await global.page.evaluate(() => {
-            const iframe = document.querySelector('iframe#AppLandingPage');
-            return iframe && iframe.contentDocument && iframe.contentDocument.body.innerHTML.includes('Compass');
-        });
-
-        if (hasIframe) {
-            console.log('iframe with Compass found');
-            const frame = global.page.frameLocator('iframe#AppLandingPage');
-            await frame.locator('div:has-text("Compass")').click({ timeout: 30000 });
-            return;
+async clickOnCompass() {
+    // Capture detailed logging for iframe loading
+    global.page.on('response', response => {
+        if (response.url().includes('webresources/msdyn_appmanagementcontrol')) {
+            console.log('Iframe response status:', response.status());
+            console.log('Iframe response headers:', response.headers());
         }
+    });
 
-        await global.page.waitForTimeout(interval);
+    // Take a screenshot before interacting with the iframe
+    await global.page.screenshot({ path: 'before_click.png' });
+
+    // Retry logic to ensure iframe is attached
+    let iframeLoaded = false;
+    for (let i = 0; i < 3; i++) {
+        try {
+            await global.page.frameLocator('iframe#AppLandingPage').waitFor({ state: 'attached', timeout: 10000 });
+            iframeLoaded = true;
+            console.log(`Iframe successfully attached on attempt ${i + 1}`);
+            break;
+        } catch (error) {
+            console.log(`Retrying to load iframe (${i + 1}/3)`);
+        }
+    }
+    if (!iframeLoaded) {
+        throw new Error('Iframe failed to load after 3 attempts');
     }
 
-    throw new Error('iframe with Compass not found after maximum attempts');
+    // Ensure the element within the iframe is visible before clicking
+    const compassElement = global.page.frameLocator('iframe#AppLandingPage').locator('//div[text()="Compass"]');
+    await compassElement.waitFor({ state: 'visible', timeout: 30000 });
+
+    // Click the element inside the iframe
+    await compassElement.click({ timeout: 30000 });
+
+    // Take a screenshot after clicking the element
+    await global.page.screenshot({ path: 'after_click.png' });
 }
+
     async clickOnCopilot() {
         await this.copilotButton.click();
     }
